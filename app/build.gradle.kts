@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -67,6 +68,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Testing Libraries
+    implementation(libs.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +88,7 @@ dependencies {
     implementation(libs.androidx.compose.bom.v20240100)
 
     implementation (libs.androidx.material.icons.extended)
+    //firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
 }

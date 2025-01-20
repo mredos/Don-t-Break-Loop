@@ -26,8 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import com.example.acmarge.viewmodel.UserProfileViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.acmarge.ui.navigation.AppNavHost
 import com.example.acmarge.ui.theme.ACMArgeTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,13 +35,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ACMArgeTheme {
-                val viewModel: UserProfileViewModel = viewModel()
-
-                viewModel.fetchUserProfile("678b9167b0b4ecfcf214e42d")
-
-                setContent {
-                    MainScreen(viewModel = viewModel)
-                }
+                AppNavHost()
             }
         }
     }
