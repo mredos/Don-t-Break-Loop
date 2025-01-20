@@ -1,7 +1,10 @@
 package com.example.acmarge.ui.navigation
 
+import MainHome
+import UserProfileScreen
 import android.provider.ContactsContract.CommonDataKinds.Email
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,7 +36,7 @@ fun AppNavHost() {
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToPhoneEntrance = { navController.navigate(Screen.EmailVerify.route) },
                 onLoginSuccess = {
-                    navController.navigate(Screen.ResetPassword.route) {
+                    navController.navigate(Screen.MainHome.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
@@ -134,7 +137,6 @@ fun AppNavHost() {
                     }
                 },
                 onSendAgain = {
-                    // Kod tekrar gönderme işlemi
                 }
             )
         }
@@ -150,5 +152,24 @@ fun AppNavHost() {
                 }
             )
         }
+
+        composable(Screen.MainHome.route) {
+            MainHome(
+                onProfileClick = { navController.navigate(Screen.Profile.route) },
+                onNotificationClick = { navController.navigate(Screen.Notifications.route) }
+            )
+        }
+
+        // UserProfileScreen composable
+        composable(Screen.Profile.route) {
+            UserProfileScreen(
+                viewModel = viewModel(),
+                onNavigateToEdit = { navController.navigate(Screen.MainHome.route) },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }
+
+

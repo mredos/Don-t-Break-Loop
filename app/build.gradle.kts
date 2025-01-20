@@ -64,7 +64,6 @@ dependencies {
     // OkHttp (Opsiyonel, API isteklerini loglamak için)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.runtime.livedata)
-    implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.navigation.compose)
 
     // Testing Libraries
