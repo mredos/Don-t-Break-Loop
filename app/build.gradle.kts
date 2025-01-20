@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-
+    // Compose & AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -49,6 +49,24 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Coil (Image Loading)
+    implementation(libs.coil.compose)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // Gson
+    implementation(libs.gson)
+
+    // OkHttp (Opsiyonel, API isteklerini loglamak için)
+    implementation(libs.logging.interceptor)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.androidx.navigation.compose)
+
+    // Testing Libraries
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,4 +74,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v260)
+
+    // Hilt (Dependency Injection)
+    implementation(libs.hilt.android)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v260)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.compose.bom.v20240100)
+
+    implementation (libs.androidx.material.icons.extended)
 }
