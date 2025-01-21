@@ -155,8 +155,7 @@ fun AppNavHost() {
 
         composable(Screen.MainHome.route) {
             MainHome(
-                onProfileClick = { navController.navigate(Screen.Profile.route) },
-                onNotificationClick = { navController.navigate(Screen.Notifications.route) }
+                viewModel = viewModel(),
             )
         }
 
