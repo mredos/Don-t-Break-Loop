@@ -26,16 +26,25 @@ fun NotificationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Notification", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4285F4)) },
+                title = {
+                    Text(
+                        text = "Notifications",
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF4285F4)
+                            tint = Color.White
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1565C0)
+                )
             )
         },
         content = { padding ->

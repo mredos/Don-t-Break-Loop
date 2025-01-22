@@ -53,7 +53,7 @@ fun UserProfileScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF4285F4)
+                    containerColor = Color(0xFF1565C0)
                 )
             )
         }

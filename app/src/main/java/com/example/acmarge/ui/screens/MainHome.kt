@@ -1,17 +1,21 @@
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.acmarge.viewmodel.UserProfileViewModel
 import com.example.acmarge.ui.components.CustomBottomBar
-
-
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,6 +23,7 @@ import com.example.acmarge.ui.screens.HomeManagementScreen
 import com.example.acmarge.ui.screens.TaskManagementScreen
 import com.example.acmarge.ui.screens.getDateList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainHome(
     viewModel: UserProfileViewModel,
@@ -38,7 +43,45 @@ fun MainHome(
     val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
 
+    // Geri tuşuna basıldığında ana sayfaya dön
+    BackHandler {
+        if (navController.currentDestination?.route != "home") {
+            navController.navigate("home") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+    }
+
     Scaffold(
+        topBar = {
+            androidx.compose.material3.TopAppBar(
+                title = {
+                    androidx.compose.material3.Text("BreakLoop", color = Color.White)
+                },
+                actions = {
+                    // Bildirim simgesi
+                    androidx.compose.material3.IconButton(onClick = { navController.navigate("notifications") }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White // İkon rengi beyaz
+                        )
+                    }
+                    // Profil simgesi
+                    androidx.compose.material3.IconButton(onClick = { navController.navigate("profile") }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.AccountCircle,
+                            contentDescription = "Profile",
+                            tint = Color.White // İkon rengi beyaz
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1565C0), // Arka plan rengi (Mavi)
+                    titleContentColor = Color.White // Başlık metni rengi
+                )
+            )
+        },
         bottomBar = {
             CustomBottomBar(
                 onHomeClick = { navController.navigate("home") },
@@ -50,15 +93,19 @@ fun MainHome(
         NavHost(
             navController = navController,
             startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .background(Color(0xFF1565C0)) // Mavi arka plan rengi
         ) {
             // Ana Sayfa
             composable("home") {
                 HomeManagementScreen(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF1565C0)), // Mavi arka plan
                     tasks = tasks,
                     selectedDate = selectedDate,
-                    onDateSelected = onSelectedDateChange,
+                    onDateSelected = { newDate -> onSelectedDateChange(newDate) },
                     onCameraRequest = onCameraRequest,
                     completedTasks = completedTasks,
                     onCompletedTasksChange = onCompletedTasksChange
@@ -69,7 +116,7 @@ fun MainHome(
             composable("notifications") {
                 NotificationScreen(
                     notifications = listOf(),
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.navigate("home") }
                 )
             }
 
@@ -78,7 +125,7 @@ fun MainHome(
                 UserProfileScreen(
                     viewModel = viewModel,
                     onNavigateToEdit = { navController.navigate("editProfile") },
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.navigate("home") }
                 )
             }
 
@@ -104,13 +151,17 @@ fun MainHome(
                     )
                 }
             }
+
+            // Takvim
             composable("calendar") {
                 TaskManagementScreen(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF1565C0)), // Mavi arka plan
                     tasks = tasks,
                     selectedDate = selectedDate,
-                    onDateSelected = onSelectedDateChange,
-                    onCameraRequest = { onCameraRequest()},
+                    onDateSelected = { newDate -> onSelectedDateChange(newDate) },
+                    onCameraRequest = { onCameraRequest() },
                     completedTasks = completedTasks,
                     onCompletedTasksChange = onCompletedTasksChange
                 )
