@@ -124,10 +124,14 @@ fun MainHome(
 
             // Profil
             composable("profile") {
+                val viewModel: UserProfileViewModel = viewModel
+                val userId = "678b751fefc9168acc8bbf48" // Örnek kullanıcı ID'si
+
                 UserProfileScreen(
                     viewModel = viewModel,
+                    userId = userId, // Kullanıcı ID'sini geçiyoruz
                     onNavigateToEdit = { navController.navigate("editProfile") },
-                    onNavigateBack = { navController.navigate("home") }
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
@@ -255,3 +259,4 @@ fun AddTaskScreen(
         )
     }
 }
+

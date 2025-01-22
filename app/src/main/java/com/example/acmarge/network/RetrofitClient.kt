@@ -1,22 +1,6 @@
-//import retrofit2.Retrofit
-//import retrofit2.converter.gson.GsonConverterFactory
-//import java.util.concurrent.TimeUnit
-
-//object RetrofitClient {
-//    private const val BASE_URL = "http://10.0.2.2:3000/"
-//
-//    val profileApiService: ProfileApiService by lazy {
-//        Retrofit.Builder()
-//            .baseUrl(BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//            .create(ProfileApiService::class.java)
-//    }
-//}
-
-
 package com.example.acmarge.network
 
+import ProfileApiService
 import com.example.acmarge.ComputerVisionApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -25,8 +9,10 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
+    // Azure BASE_URL
     private const val BASE_URL = "https://breakloop1.cognitiveservices.azure.com/"
 
+    // Retrofit için HTTP Client tanımı
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -40,6 +26,7 @@ object RetrofitClient {
             .build()
     }
 
+    // Azure API
     val api: ComputerVisionApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -47,5 +34,17 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ComputerVisionApi::class.java)
+    }
+
+    // LOCAL API Configuration (Optional)
+    // Eğer lokal bir API kullanıyorsanız burayı aktif edebilirsiniz.
+    private const val LOCAL_BASE_URL = "http://10.0.2.2:3000/"
+
+    val profileApiService: ProfileApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(LOCAL_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ProfileApiService::class.java)
     }
 }

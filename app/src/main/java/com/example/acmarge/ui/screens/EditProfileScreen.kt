@@ -55,7 +55,7 @@ fun UserProfileEditScreen(
         // Top Bar
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color(0xFF4285F4),
+            color = Color(0xFF1565C0),
             contentColor = Color.White
         ) {
             Box(
@@ -79,101 +79,101 @@ fun UserProfileEditScreen(
         }
     }
 
-        // Profile Content
-        Column(
+    // Profile Content
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 80.dp)
         ) {
-            Box(
+            AsyncImage(
+                model = selectedImageUri ?: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+                contentDescription = "Profile Picture",
+                contentScale = ContentScale.Crop, // Görselin alanı tamamen doldurmasını sağlar
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 80.dp)
-            ) {
-                AsyncImage(
-                    model = selectedImageUri ?: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-                    contentDescription = "Profile Picture",
-                    contentScale = ContentScale.Crop, // Görselin alanı tamamen doldurmasını sağlar
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(RoundedCornerShape(60.dp))
-                )
-                IconButton(
-                    onClick = {
-                        pickImageLauncher.launch("image/*")
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF4285F4))
-                ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "Edit Photo",
-                        tint = Color.White
-                    )
-                }
-            }
-
-            // Form Fields
-            TextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                )
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(60.dp))
             )
-
-            TextField(
-                value = profession,
-                onValueChange = { profession = it },
-                label = { Text("Profession") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                )
-            )
-
-            TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                )
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Save Button
-            Button(
+            IconButton(
                 onClick = {
-                    // Kaydet'e basıldığında seçilen URI'yi stringe çevirerek gönderiyoruz
-                    onSave(name, profession, email, selectedImageUri?.toString())
-                    Toast.makeText(context, "Değişiklikler kaydedildi!", Toast.LENGTH_SHORT).show()
-
+                    pickImageLauncher.launch("image/*")
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4))
+                    .align(Alignment.BottomEnd)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFF4285F4))
             ) {
-                Text("Save", fontSize = 16.sp, color = Color.White)
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "Edit Photo",
+                    tint = Color.White
+                )
             }
         }
+
+        // Form Fields
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            )
+        )
+
+        TextField(
+            value = profession,
+            onValueChange = { profession = it },
+            label = { Text("Profession") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            )
+        )
+
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            )
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Save Button
+        Button(
+            onClick = {
+                // Kaydet'e basıldığında seçilen URI'yi stringe çevirerek gönderiyoruz
+                onSave(name, profession, email, selectedImageUri?.toString())
+                Toast.makeText(context, "Değişiklikler kaydedildi!", Toast.LENGTH_SHORT).show()
+
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4))
+        ) {
+            Text("Save", fontSize = 16.sp, color = Color.White)
+        }
     }
+}
 
 @Composable
 fun MenuItem(

@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.acmarge.models.VerifyMode
 import com.example.acmarge.ui.screens.*
+import com.example.acmarge.viewmodel.UserProfileViewModel
 import java.nio.file.WatchEvent
 
 @Composable
@@ -186,10 +187,14 @@ fun AppNavHost(
         }
 
         // UserProfileScreen composable
-        composable(Screen.Profile.route) {
+        composable("profile") {
+            val viewModel: UserProfileViewModel = viewModel()
+            val userId = "678b751fefc9168acc8bbf48" // Örnek kullanıcı ID'si
+
             UserProfileScreen(
-                viewModel = viewModel(),
-                onNavigateToEdit = { navController.navigate(Screen.MainHome.route) },
+                viewModel = viewModel,
+                userId = userId, // Kullanıcı ID'sini geçiyoruz
+                onNavigateToEdit = { navController.navigate("editProfile") },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
