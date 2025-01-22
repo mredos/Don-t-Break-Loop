@@ -25,15 +25,13 @@ import com.example.acmarge.viewmodel.UserProfileViewModel
 @Composable
 fun UserProfileScreen(
     viewModel: UserProfileViewModel,
-    userId: String, // Kullanıcı ID'si
+    userId: String,
     onNavigateToEdit: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    // Kullanıcı verilerini ve yüklenme durumunu gözlemle
     val user by viewModel.user.observeAsState()
     val isLoading by viewModel.loading.observeAsState(false)
 
-    // Girişte kullanıcı verilerini yükle
     LaunchedEffect(userId) {
         viewModel.fetchUserProfile(userId)
     }
@@ -112,45 +110,32 @@ fun UserProfileScreen(
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .padding(horizontal = 16.dp)
                         ) {
                             Text(
-                                text = "Weekly Success",
-                                fontSize = 18.sp,
-                                color = Color(0xFF4285F4),
-                                fontWeight = FontWeight.Medium
+                                text = "Email: ${userData.email}",
+                                fontSize = 16.sp,
+                                color = Color.Black
                             )
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.size(100.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    progress = 0.77f,
-                                    modifier = Modifier.fillMaxSize(),
-                                    color = Color(0xFF4285F4),
-                                    strokeWidth = 8.dp
-                                )
-                                Text(
-                                    text = "77%",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF4285F4)
-                                )
-                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Job: ${userData.job}",
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            )
                         }
+
+                        Spacer(modifier = Modifier.weight(1f))
 
                         Column(
                             modifier = Modifier.padding(horizontal = 16.dp)
                         ) {
-                            MenuItem(title = "My Profile", onClick = onNavigateToEdit)
-                            MenuItem(title = "Statistic", onClick = { /* İstatistik ekranına geçiş */ })
+                            MenuItem(title = "Edit Profile", onClick = onNavigateToEdit)
                             MenuItem(title = "Logout", onClick = { showLogoutDialog = true })
                         }
                     }
@@ -175,7 +160,7 @@ fun UserProfileScreen(
                 Button(
                     onClick = {
                         showLogoutDialog = false
-                        // Logout işlemi burada yapılabilir
+                        // Logout işlemi
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = Color.White)
                 ) {
@@ -194,4 +179,3 @@ fun UserProfileScreen(
         )
     }
 }
-
