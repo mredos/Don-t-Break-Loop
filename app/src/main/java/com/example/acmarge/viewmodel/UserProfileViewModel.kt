@@ -1,22 +1,23 @@
+<<<<<<< Updated upstream
 package com.example.acmarge.viewmodel
 
 import RetrofitClient
 import User
 import android.util.Log
 import androidx.lifecycle.LiveData
+=======
+>>>>>>> Stashed changes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class UserProfileViewModel : ViewModel() {
-    private val _user = MutableLiveData<User?>()
-    val user: LiveData<User?> get() = _user
-
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> get() = _loading
+class UserProfileViewModel(private val repository: ProfileRepository) : ViewModel() {
+    val user = MutableLiveData<UserProfile?>()
+    val loading = MutableLiveData<Boolean>()
 
     fun fetchUserProfile(userId: String) {
+<<<<<<< Updated upstream
         viewModelScope.launch {
             try {
                 _loading.value = true
@@ -67,3 +68,18 @@ class UserProfileViewModel : ViewModel() {
         }
     }
 }
+=======
+        loading.value = true
+        viewModelScope.launch {
+            try {
+                val userProfile = repository.getUserProfile(userId)
+                user.postValue(userProfile) // `UserProfile` doğru atanıyor
+            } catch (e: Exception) {
+                user.postValue(null)
+            } finally {
+                loading.postValue(false)
+            }
+        }
+    }
+}
+>>>>>>> Stashed changes

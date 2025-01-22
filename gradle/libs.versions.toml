@@ -20,6 +20,11 @@ materialIconsExtended = "1.7.6"
 runtimeLivedata = "1.7.6"
 firebaseDatabaseKtx = "21.0.0"
 navigationCompose = "2.8.5"
+<<<<<<< Updated upstream
+=======
+firebaseBom = "33.8.0"
+carUiLib = "2.6.0"
+>>>>>>> Stashed changes
 
 [libraries]
 androidx-compose-bom-v20240100 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
@@ -51,6 +56,16 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+<<<<<<< Updated upstream
+=======
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+car-ui-lib = { group = "com.android.car.ui", name = "car-ui-lib", version.ref = "carUiLib" }
+
+>>>>>>> Stashed changes
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

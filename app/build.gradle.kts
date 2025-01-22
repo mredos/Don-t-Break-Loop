@@ -67,6 +67,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Testing Libraries
+<<<<<<< Updated upstream
+=======
+    implementation(libs.navigation.compose)
+    implementation(libs.car.ui.lib)
+>>>>>>> Stashed changes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +91,17 @@ dependencies {
     implementation(libs.androidx.compose.bom.v20240100)
 
     implementation (libs.androidx.material.icons.extended)
+<<<<<<< Updated upstream
+=======
+    //firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Add these dependencies for Retrofit and OkHttp
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
+>>>>>>> Stashed changes
 }

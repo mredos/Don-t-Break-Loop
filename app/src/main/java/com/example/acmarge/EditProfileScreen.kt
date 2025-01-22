@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 @Composable
 fun UserProfileEditScreen(
@@ -27,16 +30,16 @@ fun UserProfileEditScreen(
     userProfession: String,
     userEmail: String,
     currentPhoto: String?,
-    onSave: (String, String, String, String?) -> Unit, // -> Değişiklik
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
+    val storage = FirebaseStorage.getInstance()
 
     var name by remember { mutableStateOf(userName) }
     var profession by remember { mutableStateOf(userProfession) }
     var email by remember { mutableStateOf(userEmail) }
-
-
     var selectedImageUri by remember { mutableStateOf<Uri?>(currentPhoto?.let { Uri.parse(it) }) }
 
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -49,8 +52,7 @@ fun UserProfileEditScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         // Top Bar
         Surface(
@@ -77,7 +79,6 @@ fun UserProfileEditScreen(
                 )
             }
         }
-    }
 
         // Profile Content
         Column(
@@ -85,6 +86,7 @@ fun UserProfileEditScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            // Profile Photo
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -93,7 +95,7 @@ fun UserProfileEditScreen(
                 AsyncImage(
                     model = selectedImageUri ?: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
                     contentDescription = "Profile Picture",
-                    contentScale = ContentScale.Crop, // Görselin alanı tamamen doldurmasını sağlar
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(120.dp)
                         .clip(RoundedCornerShape(60.dp))
@@ -160,10 +162,50 @@ fun UserProfileEditScreen(
             // Save Button
             Button(
                 onClick = {
-                    // Kaydet'e basıldığında seçilen URI'yi stringe çevirerek gönderiyoruz
-                    onSave(name, profession, email, selectedImageUri?.toString())
-                    Toast.makeText(context, "Değişiklikler kaydedildi!", Toast.LENGTH_SHORT).show()
-
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        if (selectedImageUri != null) {
+                            // Upload photo to Firebase Storage
+                            val storageRef = storage.reference.child("profilePhotos/$userId.jpg")
+                            storageRef.putFile(selectedImageUri!!)
+                                .addOnSuccessListener {
+                                    storageRef.downloadUrl.addOnSuccessListener { photoUrl ->
+                                        updateUserData(
+                                            userId = userId,
+                                            name = name,
+                                            profession = profession,
+                                            email = email,
+                                            profilePhotoPath = "profilePhotos/$userId.jpg",
+                                            firestore = firestore,
+                                            onSuccess = {
+                                                Toast.makeText(context, "Profil başarıyla güncellendi!", Toast.LENGTH_SHORT).show()
+                                            },
+                                            onFailure = { errorMessage ->
+                                                Toast.makeText(context, "Hata: $errorMessage", Toast.LENGTH_SHORT).show()
+                                            }
+                                        )
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(context, "Fotoğraf yükleme hatası: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            updateUserData(
+                                userId = userId,
+                                name = name,
+                                profession = profession,
+                                email = email,
+                                profilePhotoPath = null,
+                                firestore = firestore,
+                                onSuccess = {
+                                    Toast.makeText(context, "Profil başarıyla güncellendi!", Toast.LENGTH_SHORT).show()
+                                },
+                                onFailure = { errorMessage ->
+                                    Toast.makeText(context, "Hata: $errorMessage", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,32 +216,29 @@ fun UserProfileEditScreen(
             }
         }
     }
-
-@Composable
-fun MenuItem(
-    title: String,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        onClick = onClick,
-        shape = RoundedCornerShape(25.dp),
-        color = Color.White
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
 }
 
+fun updateUserData(
+    userId: String,
+    name: String,
+    profession: String,
+    email: String,
+    profilePhotoPath: String?,
+    firestore: FirebaseFirestore,
+    onSuccess: () -> Unit,
+    onFailure: (String) -> Unit
+) {
+    val updates = mutableMapOf<String, Any>(
+        "name" to name,
+        "profession" to profession,
+        "email" to email
+    )
+    if (profilePhotoPath != null) {
+        updates["profilePhotoPath"] = profilePhotoPath // Storage'daki yolu saklıyoruz
+    }
 
+    firestore.collection("Users").document(userId)
+        .update(updates)
+        .addOnSuccessListener { onSuccess() }
+        .addOnFailureListener { e -> onFailure(e.message ?: "Bilinmeyen bir hata oluştu.") }
+}
