@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.acmarge.ui.screens.HomeManagementScreen
 import com.example.acmarge.ui.screens.TaskManagementScreen
+import com.example.acmarge.ui.screens.TaskSelectionDialog
 import com.example.acmarge.ui.screens.getDateList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,6 +168,32 @@ fun MainHome(
                     onCompletedTasksChange = onCompletedTasksChange
                 )
             }
+
+            // 1) Kamera rotası:
+            composable("cameraScreen") {
+                // Bu ekrana gelindiğinde doğrudan kamera izni iste
+                // ve sonra geri dön. Bunu LaunchedEffect ile yapabilirsiniz.
+                LaunchedEffect(Unit) {
+                    onCameraRequest()
+                    // İşiniz bitince geri
+                    navController.popBackStack()
+                }
+            }
+
+            // 2) Görev ekleme rotası:
+            composable("addTaskScreen") {
+                // Burada yalnızca TaskSelectionDialog veya
+                // full-screen bir sayfa şeklinde gösterebilirsiniz.
+                AddTaskScreen(
+                    tasks = tasks,
+                    onTasksChange = { newMap ->
+                        tasks.clear()
+                        tasks.putAll(newMap)
+                    },
+                    dateList = getDateList(),
+                    onDismiss = { navController.popBackStack() }
+                )
+            }
         }
     }
 
@@ -181,6 +209,44 @@ fun MainHome(
                 showDialog = false
                 navController.navigate("cameraScreen")
             }
+        )
+    }
+}
+
+@Composable
+fun AddTaskScreen(
+    tasks: MutableMap<String, MutableList<String>>,
+    onTasksChange: (MutableMap<String, MutableList<String>>) -> Unit,
+    dateList: List<String>,
+    onDismiss: () -> Unit
+) {
+    // Ekran açılır açılmaz TaskSelectionDialog gösterelim
+    var showTaskSelectionDialog by remember { mutableStateOf(true) }
+
+    if (showTaskSelectionDialog) {
+        TaskSelectionDialog(
+            onDismiss = {
+                // Diyalog kapatılırsa ekrandan geri dön
+                showTaskSelectionDialog = false
+                onDismiss()
+            },
+            onTaskSelected = { selectedTask, selectedTime, selectedDays ->
+                // Burada seçilen günlere göre tasks map’ini güncelliyoruz
+                val updatedMap = tasks.toMutableMap()
+                selectedDays.forEach { date ->
+                    val taskWithTime = "$selectedTask at $selectedTime"
+                    val taskList = updatedMap[date] ?: mutableListOf()
+                    taskList.add(taskWithTime)
+                    updatedMap[date] = taskList
+                }
+                // Değişikliği geri bildirelim
+                onTasksChange(updatedMap)
+
+                // Diyalog kapatılınca ekrandan geri dön
+                showTaskSelectionDialog = false
+                onDismiss()
+            },
+            dateList = dateList
         )
     }
 }
