@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.acmarge.network.RetrofitClient
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -16,13 +17,21 @@ class UserProfileViewModel : ViewModel() {
     val user = MutableLiveData<UserProfile?>()
     val loading = MutableLiveData<Boolean>()
 
-    fun fetchUserProfile(userId: String) {
+    fun fetchUserProfile() {
         loading.value = true
         val firestore = FirebaseFirestore.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+            user.postValue(null)
+            loading.postValue(false)
+            return
+        }
 
         viewModelScope.launch {
             try {
-                val document = firestore.collection("Profiles").document(userId).get().await()
+                val document = firestore.collection("Profiles").document(currentUser.uid).get().await()
                 val name = document.getString("name")
                 val email = document.getString("email")
                 val job = document.getString("job")
@@ -37,7 +46,6 @@ class UserProfileViewModel : ViewModel() {
         }
     }
 }
-
 data class UserProfile(
     val name: String? = null,
     val email: String? = null,

@@ -1,5 +1,6 @@
 package com.example.acmarge.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,19 +164,27 @@ fun VerifyScreen(
                                 if (task.isSuccessful) {
                                     when (mode) {
                                         VerifyMode.Register -> {
-                                            userData?.let { data ->
-                                                auth.createUserWithEmailAndPassword(
-                                                    data.email,
-                                                    data.password
-                                                ).addOnCompleteListener { emailTask ->
+                                            val uid = auth.currentUser?.uid // Kullanıcı ID'si alınıyor
+                                            val email = auth.currentUser?.email // Kullanıcı e-posta bilgisi alınıyor
+                                            if (uid != null && email != null) {
+                                                // Firestore'a kullanıcı bilgisi ekle
+                                                registerUser(
+                                                    userId = uid,
+                                                    email = email,
+                                                    name = "No Name", // Varsayılan değer
+                                                    job = "No Job", // Varsayılan değer
+                                                    profilePhotoUrl = "" // Varsayılan değer
+                                                ) { success ->
                                                     isLoading = false
-                                                    if (emailTask.isSuccessful) {
+                                                    if (success) {
                                                         onVerificationSuccess()
                                                     } else {
-                                                        errorMessage = emailTask.exception?.message
-                                                            ?: "Registration failed."
+                                                        errorMessage = "Failed to save user data to Firestore."
                                                     }
                                                 }
+                                            } else {
+                                                isLoading = false
+                                                errorMessage = "Failed to retrieve user ID or email."
                                             }
                                         }
                                         VerifyMode.ResetPassword -> {
@@ -199,7 +209,9 @@ fun VerifyScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-            ) {
+            )
+
+            {
                 if (isLoading) {
                     CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp)
                 } else {
@@ -233,4 +245,31 @@ fun VerifyScreen(
             }
         }
     }
+}
+
+fun registerUser(
+    userId: String,
+    email: String,
+    name: String = "No Name",
+    job: String = "No Job",
+    profilePhotoUrl: String = "",
+    onResult: (Boolean) -> Unit
+) {
+    val firestore = FirebaseFirestore.getInstance()
+    val userProfile = mapOf(
+        "name" to name,
+        "email" to email,
+        "job" to job,
+        "profilePhoto" to profilePhotoUrl
+    )
+
+    firestore.collection("Profiles").document(userId)
+        .set(userProfile)
+        .addOnSuccessListener {
+            onResult(true) // Firestore'a kaydedildi
+        }
+        .addOnFailureListener { e ->
+            Log.e("Firestore", "Error saving user profile", e)
+            onResult(false) // Firestore kaydedilemedi
+        }
 }
