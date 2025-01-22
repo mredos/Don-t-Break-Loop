@@ -135,7 +135,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //    private fun analyzeImage(imageUri: Uri) {
+//    private fun analyzeImage(imageUri: Uri) {
 //        // File path doğrudan currentPhotoPath üzerinden alınacak.
 //        val file = File(currentPhotoPath ?: return)
 //        val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
@@ -190,6 +190,7 @@ class MainActivity : ComponentActivity() {
                     if (response.isSuccessful) {
                         val tags = response.body()?.tags?.map { it.name } ?: emptyList()
                         val habitMatched = determineHabit(tags)
+                        showToast("ddd: $tags")
 
                         if (habitMatched != null) {
                             // Görevler arasında eşleşme kontrolü
@@ -251,16 +252,16 @@ class MainActivity : ComponentActivity() {
 
     // Alışkanlık belirleme
     private fun determineHabit(tags: List<String>): String? {
-        val sportsKeywords = listOf("sports", "exercise", "running", "gym", "soccer", "workout", "fitness")
-        val studyingKeywords = listOf("study", "notebook", "writing", "laptop", "desk", "book", "library", "text")
-        val cookingKeywords = listOf("cooking", "chef", "kitchen", "recipe", "food", "meal", "ingredients")
-        val musicKeywords = listOf("music", "instrument", "guitar", "piano", "violin", "singing")
-        val paintingKeywords = listOf("painting", "art", "drawing", "canvas", "brush", "color")
-        val cleaningKeywords = listOf("cleaning", "housework", "vacuum", "organizing", "tidying")
-        val walkingKeywords = listOf("walking", "outdoor", "park", "nature", "steps", "walk")
-        val gardeningKeywords = listOf("gardening", "plants", "flowers", "soil", "watering", "garden")
-        val skincareKeywords = listOf("skincare", "face", "cream", "beauty", "routine", "selfcare")
-        val meditationKeywords = listOf("meditation", "calm", "relax", "breathing", "mindfulness", "peace")
+        val sportsKeywords = listOf("sports", "exercise", "running", "gym", "soccer", "workout", "fitness", "training", "yoga", "basketball", "tennis", "marathon", "cycling", "stretching", "football", "athlete", "stadium", "coach", "tournament")
+        val studyingKeywords = listOf("study", "notebook", "writing", "laptop", "desk", "book", "library", "lecture", "homework", "exam", "quiz", "notes", "research", "thesis", "professor", "student", "syllabus", "classroom", "tutoring")
+        val cookingKeywords = listOf("cooking", "chef", "kitchen", "recipe", "food", "meal", "ingredients","egg","baking", "frying", "grilling", "boiling", "spices", "herbs", "sauce", "dough", "oven")
+        val musicKeywords = listOf("music", "instrument", "guitar", "piano", "violin", "singing", "drums", "melody", "lyrics", "concert", "band", "orchestra", "chorus", "composition", "recording", "playlist", "headphones", "performance", "stage")
+        val paintingKeywords = listOf("painting", "art", "drawing", "canvas", "brush", "color", "palette", "easel", "watercolor", "oilpaint", "sketch", "charcoal", "portrait", "landscape", "abstract", "gallery", "acrylic", "sculpture", "frame")
+        val cleaningKeywords = listOf("cleaning", "housework", "vacuum", "organizing", "tidying", "mopping", "dusting", "sweeping", "laundry", "scrubbing", "clutter", "broom", "detergent", "sanitize", "polish", "bucket", "gloves", "disinfect", "duster")
+        val walkingKeywords = listOf("walking", "outdoor", "park", "nature", "steps", "walk", "hiking", "trail", "trekking", "pathway", "stroll", "pedestrian", "exercise", "footpath", "woods", "freshair", "pace", "dogwalking", "urbanwalk")
+        val gardeningKeywords = listOf("gardening", "plants", "flowers", "soil", "watering", "garden", "pruning", "seeds", "harvest", "compost", "weeds", "shovel", "fertilizer", "mulch", "greenhouse", "pots", "trowel", "landscaping", "herbs")
+        val skincareKeywords = listOf("skincare", "face", "cream", "beauty", "routine", "selfcare", "solution", "hydration", "serum", "mask", "moisturizer", "cleansing", "toner", "exfoliation", "antiaging", "sunblock", "facial", "treatment", "pore")
+        val meditationKeywords = listOf("meditation", "calm", "relax", "breathing", "mindfulness", "peace", "zen", "focus", "tranquility", "mantra", "yoga", "posture", "balance", "innerpeace", "concentration", "wellbeing", "serenity", "relaxation", "harmony")
 
         return when {
             tags.any { it in sportsKeywords } -> "Sports or Fitness"
