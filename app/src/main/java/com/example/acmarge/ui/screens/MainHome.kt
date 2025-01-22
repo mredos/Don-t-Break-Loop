@@ -231,22 +231,27 @@ fun AddTaskScreen(
                 onDismiss()
             },
             onTaskSelected = { selectedTask, selectedTime, selectedDays ->
-                // Burada seçilen günlere göre tasks map’ini güncelliyoruz
                 val updatedMap = tasks.toMutableMap()
-                selectedDays.forEach { date ->
-                    val taskWithTime = "$selectedTask at $selectedTime"
-                    val taskList = updatedMap[date] ?: mutableListOf()
-                    taskList.add(taskWithTime)
-                    updatedMap[date] = taskList
-                }
-                // Değişikliği geri bildirelim
-                onTasksChange(updatedMap)
+                val allDates = getDateList()  // 0..29: geçmiş, 30: bugün, 31..59: gelecek
 
-                // Diyalog kapatılınca ekrandan geri dön
-                showTaskSelectionDialog = false
+                selectedDays.forEach { dayString ->
+                    // dayString örn: "Tue 21"
+                    val dayIndex = allDates.indexOf(dayString)
+                    // "dayIndex >= 30" => bugün (30) veya gelecek (31..59)
+                    if (dayIndex >= 30) {
+                        val taskList = updatedMap[dayString] ?: mutableListOf()
+                        taskList.add("$selectedTask at $selectedTime")
+                        updatedMap[dayString] = taskList
+                    } else {
+                        // İsterseniz kullanıcıya "Geçmişe görev eklenemez" diye Toast gösterin
+                        // showToast("Cannot add task to past date: $dayString")
+                    }
+                }
+
+                onTasksChange(updatedMap)
                 onDismiss()
             },
-            dateList = dateList
+            dateList = getDateList() // Tüm tarihleri veriyor, ama ekleme sırasında filtreleyeceğiz
         )
     }
 }

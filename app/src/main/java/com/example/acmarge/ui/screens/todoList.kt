@@ -187,11 +187,11 @@ fun HomeManagementScreen(
     onDateSelected: (String) -> Unit,
     onCameraRequest: () -> Unit,
 
-// Yeni eklediğimiz parametreler:
+    // Yeni eklediğimiz parametreler:
     completedTasks: MutableMap<String, MutableList<String>>,      // Tamamlanan görevleri mainActivity’den alıyoruz
     onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // MainActivity'ye geri bildirim için
 ) {
-    // Mevcut tarih ve saat
+    // Mevcut tarih ve saat (Bu kısımlar kullanılmıyorsa kaldırabilirsiniz)
     val currentDate = remember { mutableStateOf("") }
     val currentTime = remember { mutableStateOf("") }
 
@@ -199,6 +199,11 @@ fun HomeManagementScreen(
 
     // Görev ve tamamlanma listesi
     var showTaskSelectionDialog by remember { mutableStateOf(false) }
+
+    // LaunchedEffect ile selectedDate'i bugünün tarihi olarak ayarlama
+    LaunchedEffect(Unit) {
+        onDateSelected(getTodayDateFormatted())
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -215,7 +220,6 @@ fun HomeManagementScreen(
                 color = Color(0xFF7A7A7A)
             )
             Spacer(modifier = Modifier.height(16.dp))
-
 
             Spacer(modifier = Modifier.height(32.dp))
             Text(
@@ -251,9 +255,34 @@ fun HomeManagementScreen(
                 }
             )
 
+            // Eğer `showTaskSelectionDialog` true ise dialog göster
+            if (showTaskSelectionDialog) {
+                TaskSelectionDialog(
+                    onDismiss = { showTaskSelectionDialog = false },
+                    onTaskSelected = { selectedTask, selectedTime, selectedDays ->
+                        // Sadece bugün ve ileri tarihli günlere ekleme yap
+                        val allDates = getDateList()
+                        val futureSelectedDays = selectedDays.filter { day ->
+                            val index = allDates.indexOf(day)
+                            index >= 30 // 30. indeks bugünü temsil eder
+                        }
+
+                        futureSelectedDays.forEach { date ->
+                            val taskWithTime = "$selectedTask at $selectedTime"
+                            tasks[date] = (tasks[date] ?: mutableListOf()).apply {
+                                add(taskWithTime)
+                            }
+                        }
+                        showTaskSelectionDialog = false
+                        onCompletedTasksChange(tasks)
+                    },
+                    dateList = getDateList() // Tüm tarihleri veriyoruz ama ekleme sırasında filtreleyeceğiz
+                )
+            }
         }
     }
 }
+
 
 
 
@@ -281,7 +310,11 @@ fun getDateList(): List<String> {
         dateFormat.format(calendar.time) // Formatlanmış tarihi ekle
     }
 }
-
+fun getTodayDateFormatted(): String {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("EEE dd", Locale.ENGLISH)
+    return dateFormat.format(calendar.time)
+}
 @Composable
 fun DateRow(
     selectedDate: String,

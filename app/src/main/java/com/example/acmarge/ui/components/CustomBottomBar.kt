@@ -69,7 +69,7 @@ fun CustomBottomBar(
                 Icon(
                     painter = painterResource(id = R.drawable.calendaricon),
                     contentDescription = "Calendar Icon",
-                    tint = Color.Gray,
+                    tint = Color(0xFF006EE9), // Ev simgesini mavi yaptık,
                     modifier = Modifier.size(32.dp)
                 )
             }
