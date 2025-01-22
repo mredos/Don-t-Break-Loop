@@ -58,7 +58,7 @@ fun MainHome(
         topBar = {
             androidx.compose.material3.TopAppBar(
                 title = {
-                    androidx.compose.material3.Text("BreakLoop", color = Color.White)
+                    androidx.compose.material3.Text("Don't Break Loop", color = Color.White)
                 },
                 actions = {
                     // Bildirim simgesi

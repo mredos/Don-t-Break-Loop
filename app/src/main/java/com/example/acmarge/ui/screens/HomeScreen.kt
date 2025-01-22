@@ -34,7 +34,7 @@ fun HomeScreen(
         ) {
             // Üstteki resim
             Image(
-                painter = painterResource(id = R.drawable.brainbox),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(200.dp) // 200x200
@@ -52,7 +52,7 @@ fun HomeScreen(
                 textAlign = TextAlign.Center
             )
             Text(
-                text = "BrainBox",
+                text = "Don't Break Loop",
                 style = MaterialTheme.typography.displayMedium.copy( // Daha büyük boyut
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
