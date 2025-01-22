@@ -22,9 +22,17 @@ import com.example.acmarge.ui.screens.getDateList
 @Composable
 fun MainHome(
     viewModel: UserProfileViewModel,
+
+    // Seçili tarih
+    selectedDate: String,
+    onSelectedDateChange: (String) -> Unit,
+
+    // Görevler
     tasks: MutableMap<String, MutableList<String>>,
     completedTasks: MutableMap<String, MutableList<String>>,
     onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit,
+
+    // Kamera isteği
     onCameraRequest: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -103,7 +111,7 @@ fun MainHome(
                     tasks = tasks,
                     selectedDate = selectedDate,
                     onDateSelected = { newDate -> selectedDate = newDate },
-                    onCameraRequest = onCameraRequest,
+                    onCameraRequest = { onCameraRequest()},
                     completedTasks = completedTasks,
                     onCompletedTasksChange = onCompletedTasksChange
                 )

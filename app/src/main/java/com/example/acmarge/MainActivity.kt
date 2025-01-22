@@ -69,9 +69,30 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ACMArgeTheme {
-                AppNavHost()
+                AppNavHost(
+                    onRequestCameraPermission = { requestCameraPermission() },
+
+                    // selectedDate
+                    selectedDate = selectedDate,
+                    onSelectedDateChange = { newDate ->
+                        selectedDate = newDate
+                    },
+
+                    // tasks
+                    tasks = tasks,
+                    onTasksChange = { newTasks ->
+                        tasks = newTasks
+                    },
+
+                    // completedTasks
+                    completedTasks = completedTasks,
+                    onCompletedTasksChange = { newCompletedTasks ->
+                        completedTasks = newCompletedTasks
+                    }
+                )
             }
-            }
+        }
+
     }
 
     private fun requestCameraPermission() {
@@ -173,6 +194,7 @@ class MainActivity : ComponentActivity() {
                         if (habitMatched != null) {
                             // Görevler arasında eşleşme kontrolü
                             val currentTasks = tasks[selectedDate] ?: emptyList()
+                            showToast("ddd: $currentTasks in tasks!")
 
                             // Örneğin "Sports or Fitness" gibi bir habitMatched elde ettiniz.
                             // tasks içinde "Sports or Fitness at 12:00 PM" vb. olarak geçiyor olabilir.
@@ -230,7 +252,7 @@ class MainActivity : ComponentActivity() {
     // Alışkanlık belirleme
     private fun determineHabit(tags: List<String>): String? {
         val sportsKeywords = listOf("sports", "exercise", "running", "gym", "soccer", "workout", "fitness")
-        val studyingKeywords = listOf("study", "notebook", "writing", "laptop", "desk", "book", "library")
+        val studyingKeywords = listOf("study", "notebook", "writing", "laptop", "desk", "book", "library", "text")
         val cookingKeywords = listOf("cooking", "chef", "kitchen", "recipe", "food", "meal", "ingredients")
         val musicKeywords = listOf("music", "instrument", "guitar", "piano", "violin", "singing")
         val paintingKeywords = listOf("painting", "art", "drawing", "canvas", "brush", "color")

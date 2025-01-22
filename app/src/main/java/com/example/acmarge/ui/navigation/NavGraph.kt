@@ -17,7 +17,21 @@ import com.example.acmarge.ui.screens.*
 import java.nio.file.WatchEvent
 
 @Composable
-fun AppNavHost() {
+fun AppNavHost(
+    onRequestCameraPermission: () -> Unit,
+
+    // selectedDate parametresi
+    selectedDate: String,
+    onSelectedDateChange: (String) -> Unit,
+
+    // tasks
+    tasks: MutableMap<String, MutableList<String>>,
+    onTasksChange: (MutableMap<String, MutableList<String>>) -> Unit,
+
+    // completedTasks
+    completedTasks: MutableMap<String, MutableList<String>>,
+    onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -157,14 +171,17 @@ fun AppNavHost() {
         }
         composable(Screen.MainHome.route) {
             MainHome(
-                viewModel = viewModel(), // UserProfileViewModel'i sağlayın
-                tasks = mutableMapOf(),
-                completedTasks = mutableMapOf(),
-                onCompletedTasksChange = { updatedTasks ->
+                viewModel = viewModel(),
 
-                },
-                onCameraRequest = {
-                }
+                // Burada da aynı parametreleri geçiyoruz:
+                selectedDate = selectedDate,
+                onSelectedDateChange = onSelectedDateChange,
+
+                tasks = tasks,
+                completedTasks = completedTasks,
+                onCompletedTasksChange = onCompletedTasksChange,
+
+                onCameraRequest = onRequestCameraPermission
             )
         }
 
