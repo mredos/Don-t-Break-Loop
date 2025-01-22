@@ -103,15 +103,7 @@ onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // Mai
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showTaskSelectionDialog = true },
-                containerColor = Color.Blue,
-                contentColor = Color.White
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task")
-            }
-        }
+
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -182,22 +174,6 @@ onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // Mai
                     },
                     dateList = getDateList()
                 )
-            }
-
-            // Kamera butonu (Sol alt köşe)
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomStart // Sol alt köşeye yerleştiriyoruz
-            ) {
-                FloatingActionButton(
-                    onClick = onCameraRequest, // Kamera izni isteğini çağır
-                    containerColor = Color.Green,
-                    contentColor = Color.White
-                ) {
-                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Open Camera")
-                }
             }
         }
     }

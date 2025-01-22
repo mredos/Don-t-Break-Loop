@@ -31,8 +31,10 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
 
 class MainActivity : ComponentActivity() {
@@ -166,79 +168,116 @@ class MainActivity : ComponentActivity() {
 //                }
 //            })
 //    }
-    private fun analyzeImage(imageUri: Uri) {
-        if (currentPhotoPath.isNullOrEmpty()) {
-            showToast("Error: currentPhotoPath is null or empty!")
-            return
-        }
+private fun analyzeImage(imageUri: Uri) {
+    if (currentPhotoPath.isNullOrEmpty()) {
+        showToast("Error: currentPhotoPath is null or empty!")
+        return
+    }
 
-        val file = File(currentPhotoPath!!)
-        if (!file.exists()) {
-            showToast("Error: File does not exist at path: $currentPhotoPath")
-            return
-        }
+    val file = File(currentPhotoPath!!)
+    if (!file.exists()) {
+        showToast("Error: File does not exist at path: $currentPhotoPath")
+        return
+    }
 
-        val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-        val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
+    val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+    val part = MultipartBody.Part.createFormData("file", file.name, requestBody)
 
-        RetrofitClient.api.analyzeImage(image = part)
-            .enqueue(object : Callback<ImageAnalysisResponse> {
-                override fun onResponse(
-                    call: Call<ImageAnalysisResponse>,
-                    response: Response<ImageAnalysisResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val tags = response.body()?.tags?.map { it.name } ?: emptyList()
-                        val habitMatched = determineHabit(tags)
-                        showToast("ddd: $tags")
+    // API çağrısı
+    RetrofitClient.api.analyzeImage(image = part)
+        .enqueue(object : Callback<ImageAnalysisResponse> {
+            override fun onResponse(
+                call: Call<ImageAnalysisResponse>,
+                response: Response<ImageAnalysisResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val tags = response.body()?.tags?.map { it.name } ?: emptyList()
+                    val habitMatched = determineHabit(tags)
 
-                        if (habitMatched != null) {
-                            // Görevler arasında eşleşme kontrolü
-                            val currentTasks = tasks[selectedDate] ?: emptyList()
-                            showToast("ddd: $currentTasks in tasks!")
+                    // Şu anki saati alıyoruz (ör. "12:30 PM" formatında)
+                    val now = Calendar.getInstance()
+                    val timeFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
+                    val currentTimeString = timeFormat.format(now.time)
 
-                            // Örneğin "Sports or Fitness" gibi bir habitMatched elde ettiniz.
-                            // tasks içinde "Sports or Fitness at 12:00 PM" vb. olarak geçiyor olabilir.
-                            // Aşağıda bu habit’in adını (ör. "Sports or Fitness") içeren görevi yakalıyoruz:
-                            val matchedTask = currentTasks.find {
-                                it.contains(habitMatched, ignoreCase = true)
-                            }
+                    showToast("Analiz: $tags\nŞu an saat: $currentTimeString")
 
-                            if (matchedTask != null) {
-                                showToast("Matched Habit: $habitMatched in tasks!")
+                    if (habitMatched != null) {
+                        // Seçili tarih içindeki görevleri çek
+                        val currentTasks = tasks[selectedDate] ?: emptyList()
 
-                                // 3) Burada completedTasks'i güncelleyip checkbox'ı işaretlemiş olacağız
-                                //    (Zaten Compose state olduğu için arayüz otomatik yenilenir).
-                                val oldMap = completedTasks.toMutableMap()
-                                val oldList = oldMap[selectedDate] ?: mutableListOf()
+                        // Görev adı "Cooking" ise "Cooking at 12:30 PM" gibi bir metin bulmaya çalış
+                        val matchedTask = currentTasks.find {
+                            it.contains(habitMatched, ignoreCase = true)
+                        }
 
-                                // Eğer aynı görev tekrar eklenmesin derseniz, eklemeden önce kontrol edebilirsiniz.
-                                if (!oldList.contains(matchedTask)) {
-                                    oldList.add(matchedTask)
+                        if (matchedTask != null) {
+                            // matchedTask örneğin: "Cooking at 12:30 PM"
+                            val splitted = matchedTask.split(" at ")
+                            if (splitted.size == 2) {
+                                val taskName = splitted[0]  // "Cooking"
+                                val taskTime = splitted[1]  // "12:30 PM"
+
+                                // ---- BURADA ±5 DAKİKA TOLERANSIYLA KONTROL ----
+                                val matchedTimeDate = timeFormat.parse(taskTime)
+                                val currentTimeDate = timeFormat.parse(currentTimeString)
+
+                                if (matchedTimeDate != null && currentTimeDate != null) {
+                                    val diffInMillis = abs(currentTimeDate.time - matchedTimeDate.time)
+                                    val diffInMinutes = diffInMillis / (60 * 1000)
+
+                                    // Örneğin 2 dakika tolerans
+                                    val tolerance = 2
+                                    if (diffInMinutes <= tolerance) {
+                                        // Görevi tamamla
+                                        completeTask(matchedTask)
+                                    } else {
+                                        showToast(
+                                            "Eşleşen alışkanlık: $taskName\n" +
+                                                    "Ancak saat uymuyor!\n" +
+                                                    "Görev saati: $taskTime - Şu an: $currentTimeString\n" +
+                                                    "Fark: $diffInMinutes dakika"
+                                        )
+                                    }
+                                } else {
+                                    showToast("Tarih parse edilemedi!")
                                 }
-                                oldMap[selectedDate] = oldList
-
-                                // Değişikliği state’e yansıtalım
-                                completedTasks = oldMap
-
                             } else {
-                                showToast("Habit Detected: $habitMatched, but no match in tasks.")
+                                showToast("Görev formatı hatalı: $matchedTask")
                             }
                         } else {
-                            showToast("No habit detected.")
+                            showToast("Habit Detected: $habitMatched, but no match in tasks.")
                         }
                     } else {
-                        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
-                        showToast("API Error: $errorMessage")
+                        showToast("No habit detected.")
                     }
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    showToast("API Error: $errorMessage")
                 }
+            }
 
-                override fun onFailure(call: Call<ImageAnalysisResponse>, t: Throwable) {
-                    val failureMessage = t.message ?: "Unknown error"
-                    showToast("Request failed: $failureMessage")
-                }
-            })
+            override fun onFailure(call: Call<ImageAnalysisResponse>, t: Throwable) {
+                val failureMessage = t.message ?: "Unknown error"
+                showToast("Request failed: $failureMessage")
+            }
+        })
+}
+
+
+    private fun completeTask(task: String) {
+        // Seçilen tarihe ait completedTasks listesi
+        val oldMap = completedTasks.toMutableMap()
+        val oldList = oldMap[selectedDate] ?: mutableListOf()
+
+        if (!oldList.contains(task)) {
+            oldList.add(task)
+        }
+        oldMap[selectedDate] = oldList
+        completedTasks = oldMap
+
+        showToast("Görev tamamlandı: $task")
     }
+
 
 
     // Kullanıcıya Toast göstermek için bir yardımcı fonksiyon
