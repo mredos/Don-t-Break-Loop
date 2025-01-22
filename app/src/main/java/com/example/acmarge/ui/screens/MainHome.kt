@@ -36,7 +36,6 @@ fun MainHome(
     onCameraRequest: () -> Unit
 ) {
     val navController = rememberNavController()
-    var selectedDate by remember { mutableStateOf(getDateList()[30]) }
     var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -59,7 +58,7 @@ fun MainHome(
                     modifier = Modifier.fillMaxSize(),
                     tasks = tasks,
                     selectedDate = selectedDate,
-                    onDateSelected = { newDate -> selectedDate = newDate },
+                    onDateSelected = onSelectedDateChange,
                     onCameraRequest = onCameraRequest,
                     completedTasks = completedTasks,
                     onCompletedTasksChange = onCompletedTasksChange
@@ -110,7 +109,7 @@ fun MainHome(
                     modifier = Modifier.fillMaxSize(),
                     tasks = tasks,
                     selectedDate = selectedDate,
-                    onDateSelected = { newDate -> selectedDate = newDate },
+                    onDateSelected = onSelectedDateChange,
                     onCameraRequest = { onCameraRequest()},
                     completedTasks = completedTasks,
                     onCompletedTasksChange = onCompletedTasksChange

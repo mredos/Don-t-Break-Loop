@@ -129,7 +129,8 @@ onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // Mai
                 selectedDate = selectedDate,
                 onDateSelected = { onDateSelected(it) }, // Tarih değişimini aktar
                 tasks = tasks,
-                completedTasks = mutableMapOf()
+                completedTasks = completedTasks
+
             )
 
 
