@@ -199,8 +199,6 @@ private fun analyzeImage(imageUri: Uri) {
                     val timeFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
                     val currentTimeString = timeFormat.format(now.time)
 
-                    showToast("Analiz: $tags\nŞu an saat: $currentTimeString")
-
                     if (habitMatched != null) {
                         // Seçili tarih içindeki görevleri çek
                         val currentTasks = tasks[selectedDate] ?: emptyList()
@@ -275,10 +273,7 @@ private fun analyzeImage(imageUri: Uri) {
         oldMap[selectedDate] = oldList
         completedTasks = oldMap
 
-        showToast("Görev tamamlandı: $task")
     }
-
-
 
     // Kullanıcıya Toast göstermek için bir yardımcı fonksiyon
     private fun showToast(message: String) {
@@ -287,7 +282,6 @@ private fun analyzeImage(imageUri: Uri) {
             Log.d("Toast", message) // Doğrulama için Log
         }
     }
-
 
     // Alışkanlık belirleme
     private fun determineHabit(tags: List<String>): String? {
