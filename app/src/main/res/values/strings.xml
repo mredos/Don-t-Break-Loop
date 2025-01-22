@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ACMArge</string>
+    <string name="title_activity_yapilacaklarlistesi">yapilacaklarlistesi</string>
+    <string name="title_activity_todo_list">todoList</string>
 </resources>
