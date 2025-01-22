@@ -47,14 +47,7 @@ fun ResetPasswordScreen(
                 }
             )
         },
-        bottomBar = {
-            // Burada sizin `CustomBottomBar` bileşeniniz kullanılıyor
-            CustomBottomBar(
-                onHomeClick = { /* Ana sayfa için işlem */ },
-                onCalendarClick = { /* Takvim için işlem */ },
-                onAddTaskClick = { /* Yeni görev ekleme */ }
-            )
-        }
+
     ) { innerPadding ->
         Column(
             modifier = Modifier

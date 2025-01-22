@@ -3,7 +3,9 @@ package com.example.acmarge.ui.navigation
 import MainHome
 import UserProfileScreen
 import android.provider.ContactsContract.CommonDataKinds.Email
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.acmarge.models.VerifyMode
 import com.example.acmarge.ui.screens.*
+import java.nio.file.WatchEvent
 
 @Composable
 fun AppNavHost() {
@@ -152,10 +155,16 @@ fun AppNavHost() {
                 }
             )
         }
-
         composable(Screen.MainHome.route) {
             MainHome(
-                viewModel = viewModel(),
+                viewModel = viewModel(), // UserProfileViewModel'i sağlayın
+                tasks = mutableMapOf(),
+                completedTasks = mutableMapOf(),
+                onCompletedTasksChange = { updatedTasks ->
+
+                },
+                onCameraRequest = {
+                }
             )
         }
 
@@ -168,7 +177,8 @@ fun AppNavHost() {
             )
         }
 
-    }
+        }
 }
+
 
 

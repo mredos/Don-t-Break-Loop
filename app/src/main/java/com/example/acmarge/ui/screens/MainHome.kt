@@ -1,21 +1,10 @@
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,12 +15,20 @@ import com.example.acmarge.ui.components.CustomBottomBar
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.acmarge.ui.screens.HomeManagementScreen
+import com.example.acmarge.ui.screens.TaskManagementScreen
+import com.example.acmarge.ui.screens.getDateList
 
 @Composable
-fun MainHome(viewModel: UserProfileViewModel) {
+fun MainHome(
+    viewModel: UserProfileViewModel,
+    tasks: MutableMap<String, MutableList<String>>,
+    completedTasks: MutableMap<String, MutableList<String>>,
+    onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit,
+    onCameraRequest: () -> Unit
+) {
     val navController = rememberNavController()
-
-    // Dialog görünürlüğü için state
+    var selectedDate by remember { mutableStateOf(getDateList()[30]) }
     var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -50,9 +47,14 @@ fun MainHome(viewModel: UserProfileViewModel) {
         ) {
             // Ana Sayfa
             composable("home") {
-                HomeScreen(
-                    onProfileClick = { navController.navigate("profile") },
-                    onNotificationClick = { navController.navigate("notifications") }
+                HomeManagementScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    tasks = tasks,
+                    selectedDate = selectedDate,
+                    onDateSelected = { newDate -> selectedDate = newDate },
+                    onCameraRequest = onCameraRequest,
+                    completedTasks = completedTasks,
+                    onCompletedTasksChange = onCompletedTasksChange
                 )
             }
 
@@ -95,6 +97,17 @@ fun MainHome(viewModel: UserProfileViewModel) {
                     )
                 }
             }
+            composable("calendar") {
+                TaskManagementScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    tasks = tasks,
+                    selectedDate = selectedDate,
+                    onDateSelected = { newDate -> selectedDate = newDate },
+                    onCameraRequest = onCameraRequest,
+                    completedTasks = completedTasks,
+                    onCompletedTasksChange = onCompletedTasksChange
+                )
+            }
         }
     }
 
@@ -104,55 +117,12 @@ fun MainHome(viewModel: UserProfileViewModel) {
             onDismiss = { showDialog = false },
             onAddTaskClick = {
                 showDialog = false
-                // "Add Task" ekranına yönlendirme
                 navController.navigate("addTaskScreen")
             },
             onTakePhotoClick = {
                 showDialog = false
-                // Kamera ekranına yönlendirme
                 navController.navigate("cameraScreen")
             }
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreen(
-    onProfileClick: () -> Unit,
-    onNotificationClick: () -> Unit
-) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("BreakLoop") },
-                actions = {
-                    IconButton(onClick = onNotificationClick) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.Gray
-                        )
-                    }
-                    IconButton(onClick = onProfileClick) {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Profile",
-                            tint = Color.Gray
-                        )
-                    }
-                }
-            )
-        },
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Welcome to Home Screen")
-            }
-        }
-    )
 }

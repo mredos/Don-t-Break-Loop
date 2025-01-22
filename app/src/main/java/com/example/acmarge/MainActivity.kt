@@ -3,15 +3,8 @@ package com.example.acmarge
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import AddTaskTakePhotoDialog
-import CustomBottomBar
-import NotificationItem
-import NotificationScreen
-import UserProfileEditScreen
-import UserProfileScreen
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -20,32 +13,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.compose.material3.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.acmarge.network.RetrofitClient
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.acmarge.ui.navigation.AppNavHost
+import com.example.acmarge.ui.screens.TaskManagementScreen
+import com.example.acmarge.ui.screens.getDateList
 import com.example.acmarge.ui.theme.ACMArgeTheme
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -58,18 +33,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.example.acmarge.viewmodel.UserProfileViewModel
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ACMArgeTheme {
-                AppNavHost()
-            }
-        }
-    }
-}
 
 
 class MainActivity : ComponentActivity() {
@@ -79,6 +42,7 @@ class MainActivity : ComponentActivity() {
     private var completedTasks by mutableStateOf(
         mutableMapOf<String, MutableList<String>>()
     )
+
     // Kamera izni kontrolü ve başlatıcı
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -105,23 +69,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ACMArgeTheme {
-                TaskManagementScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    tasks = tasks,
-                    selectedDate = selectedDate,
-                    onDateSelected = { newDate -> selectedDate = newDate },
-                    onCameraRequest = { requestCameraPermission() },
-
-                    // MainActivity’deki completedTasks'i doğrudan parametre olarak veriyoruz
-                    completedTasks = completedTasks,
-
-                    // completedTasks değiştiğinde MainActivity’nin state’ini güncelleyecek callback
-                    onCompletedTasksChange = { newMap ->
-                        completedTasks = newMap
-                    }
-                )
+                AppNavHost()
             }
-        }
+            }
     }
 
     private fun requestCameraPermission() {

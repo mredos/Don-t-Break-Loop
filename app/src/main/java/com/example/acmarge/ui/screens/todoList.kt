@@ -1,31 +1,16 @@
-package com.example.acmarge
+package com.example.acmarge.ui.screens
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.NumberPicker
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.acmarge.ui.theme.ACMArgeTheme
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -34,31 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Checkbox
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -74,11 +45,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import java.util.*
 import android.os.Handler
 import android.os.Looper
+import com.example.acmarge.R
 
 
 @Composable
@@ -228,6 +198,82 @@ onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // Mai
                     Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Open Camera")
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun HomeManagementScreen(
+    modifier: Modifier = Modifier,
+    tasks: MutableMap<String, MutableList<String>>,
+    selectedDate: String,
+    onDateSelected: (String) -> Unit,
+    onCameraRequest: () -> Unit,
+
+// Yeni eklediğimiz parametreler:
+    completedTasks: MutableMap<String, MutableList<String>>,      // Tamamlanan görevleri mainActivity’den alıyoruz
+    onCompletedTasksChange: (MutableMap<String, MutableList<String>>) -> Unit // MainActivity'ye geri bildirim için
+) {
+    // Mevcut tarih ve saat
+    val currentDate = remember { mutableStateOf("") }
+    val currentTime = remember { mutableStateOf("") }
+
+    val dynamicDateList = getDateList()
+
+    // Görev ve tamamlanma listesi
+    var showTaskSelectionDialog by remember { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color(0xFFF7F7F7))
+                .padding(innerPadding)
+        ) {
+            Text(
+                text = selectedDate,
+                fontSize = 14.sp,
+                color = Color(0xFF7A7A7A)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Daily Task",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Seçilen tarihe ait görevler
+            val filteredTasks = tasks[selectedDate] ?: mutableListOf()
+            val filteredCompletedTasks = completedTasks[selectedDate] ?: mutableListOf()
+
+            TaskList(
+                tasks = filteredTasks,
+                completedTasks = filteredCompletedTasks,
+                onTaskChecked = { taskName, isChecked ->
+                    val updatedMap = completedTasks.toMutableMap()
+                    val updatedList = (updatedMap[selectedDate] ?: mutableListOf()).toMutableList()
+
+                    if (isChecked) {
+                        if (!updatedList.contains(taskName)) {
+                            updatedList.add(taskName)
+                        }
+                    } else {
+                        updatedList.remove(taskName)
+                    }
+
+                    // Haritayı güncelleyip callback ile MainActivity'ye bildiriyoruz
+                    updatedMap[selectedDate] = updatedList
+                    onCompletedTasksChange(updatedMap)
+                }
+            )
+
         }
     }
 }

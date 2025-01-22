@@ -12,6 +12,5 @@ sealed class Screen(val route: String) {
     object EditProfileScreen : Screen("edit_profile_screen")
     object MainHome : Screen("main_home_screen")
     object Notifications : Screen("notifications_screen")
-
-
+    object todoList : Screen("todo_list")
 }
